@@ -30,8 +30,8 @@ banco <- read_excel("banco/strategos - senado.xlsx")
 ## ordem labels
 ordem_5 <- c("Discordo \nTotalmente","Discordo \nParcialmente","Neutro",
              "Concordo \nParcialmente","Concordo \nTotalmente")
-ordem_5 <- c("Concordo \nTotalmente","Concordo \nParcialmente","Neutro",
-             "Discordo \nParcialmente","Discordo \nTotalmente")
+#ordem_5 <- c("Concordo \nTotalmente","Concordo \nParcialmente","Neutro",
+#             "Discordo \nParcialmente","Discordo \nTotalmente")
 
 ####### análise 1 - Devemos investir em educação para prevenção do uso problemático de drogas #######
 
@@ -78,7 +78,7 @@ ggplot(an1,
   geom_bar(stat = "identity", position = "fill") +
   labs(x = "Partido/Federação política", y = "Frequência") +
   theme_estat() +
-  scale_fill_manual(values =  cores_estat, name = "Devemos investir em educação para \nprevenção do uso problemático de drogas?")+
+  scale_fill_manual(values =  cores_estat, name = "Devemos investir em educação para \nprevenção do uso problemático de drogas")+
   scale_x_discrete(
     labels=c("MDB", "NOVO", "PDT", "PL", "PODEMOS", "PP", "PSD", "PSDB/\nCIDADANIA", "PT/PV/\nPCdoB", "REPUBLI-\nCANOS", "UNIÃO")
   ) + 
@@ -131,7 +131,7 @@ ggplot(an2,
   geom_bar(stat = "identity", position = "fill") +
   labs(x = "Partido/Federação política", y = "Frequência") +
   theme_estat() +
-  scale_fill_manual(values =  cores_estat, name = "Devemos adotar políticas sociais \npara pessoas que usam drogas?")+
+  scale_fill_manual(values =  cores_estat, name = "Devemos adotar políticas sociais \npara pessoas que usam drogas")+
   scale_x_discrete(
     labels=c("MDB", "NOVO", "PDT", "PL", "PODEMOS", "PP", "PSD", "PSDB/\nCIDADANIA", "PT/PV/\nPCdoB", "REPUBLI-\nCANOS", "UNIÃO")
   ) + 
@@ -186,7 +186,7 @@ ggplot(an3,
   labs(x = "Partido/Federação política", y = "Frequência") +
   theme_estat() +
   scale_fill_manual(values =  cores_estat, 
-                    name = "Pessoas que tenham problemas com \nuso de drogas devem ter o direito ao \ntratamento financiado pelo Estado?")+
+                    name = "Pessoas que tenham problemas com \nuso de drogas devem ter o direito ao \ntratamento financiado pelo Estado")+
   scale_x_discrete(
     labels=c("MDB", "NOVO", "PDT", "PL", "PODEMOS", "PP", "PSD", "PSDB/\nCIDADANIA", "PT/PV/\nPCdoB", "REPUBLI-\nCANOS", "UNIÃO")
   ) + 
@@ -242,7 +242,7 @@ ggplot(an4,
   labs(x = "Partido/Federação política", y = "Frequência") +
   theme_estat() +
   scale_fill_manual(values =  cores_estat, 
-                    name = "Cada tipo de droga deve ter uma regulação \nespecífica definida pelo Estado?")+
+                    name = "Cada tipo de droga deve ter uma regulação \nespecífica definida pelo Estado")+
   scale_x_discrete(
     labels=c("MDB", "NOVO", "PDT", "PL", "PODEMOS", "PP", "PSD", "PSDB/\nCIDADANIA", "PT/PV/\nPCdoB", "REPUBLI-\nCANOS", "UNIÃO")
   ) + 
@@ -298,7 +298,7 @@ ggplot(an5,
   labs(x = "Partido/Federação política", y = "Frequência") +
   theme_estat() +
   scale_fill_manual(values =  cores_estat, 
-                    name = "Pequenos e grandes traficantes \ndevem ter penas diferentes?")+
+                    name = "Pequenos e grandes traficantes \ndevem ter penas diferentes")+
   scale_x_discrete(
     labels=c("MDB", "NOVO", "PDT", "PL", "PODEMOS", "PP", "PSD", "PSDB/\nCIDADANIA", "PT/PV/\nPCdoB", "REPUBLI-\nCANOS", "UNIÃO")
   ) + 
