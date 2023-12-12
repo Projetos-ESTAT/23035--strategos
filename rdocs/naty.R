@@ -33,276 +33,201 @@ ordem_5 <- c("Discordo \nTotalmente","Discordo \nParcialmente","Neutro",
 #ordem_5 <- c("Concordo \nTotalmente","Concordo \nParcialmente","Neutro",
 #             "Discordo \nParcialmente","Discordo \nTotalmente")
 
-####### análise 1 - Devemos investir em educação para prevenção do uso problemático de drogas #######
+####### análise 2 #######
+# referente às afirmativas:
+# Devemos investir em educação para prevenção do uso problemático de drogas
+# Devemos adotar políticas sociais para pessoas que usam drogas
+# Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado
+# Cada tipo de droga deve ter uma regulação específica definida pelo Estado
+# Pequenos e grandes traficantes devem ter penas diferentes
 
-an1 <- banco %>% 
-  select(`Partido/Federação política (disposto na planilha)`,
-         `Devemos investir em educação para prevenção do uso problemático de drogas
-`) %>% mutate(
-  "Devemos investir em educação para prevenção do uso problemático de drogas" = case_when(
-    `Devemos investir em educação para prevenção do uso problemático de drogas
-` == 1 ~ "Discordo \nTotalmente",
-    `Devemos investir em educação para prevenção do uso problemático de drogas
-` == 2 ~ "Discordo \nParcialmente",
-    `Devemos investir em educação para prevenção do uso problemático de drogas
-` == 3 ~ "Neutro",
-    `Devemos investir em educação para prevenção do uso problemático de drogas
-` == 4 ~ "Concordo \nParcialmente",
-    `Devemos investir em educação para prevenção do uso problemático de drogas
-` == 5 ~ "Concordo \nTotalmente"
-  )
+an2 <- banco[,c(2:5,8)]
+
+an2 <- an2 %>% 
+  reshape2::melt(variable.name = "afirmativas", value.name = "respostas")
+
+an2 <- an2 %>%  mutate( "respostas" = case_when( 
+  respostas == 1 ~ "Discordo \nTotalmente",
+  respostas == 2 ~ "Discordo \nParcialmente",
+  respostas == 3 ~ "Neutro",
+  respostas == 4 ~ "Concordo \nParcialmente",
+  respostas == 5 ~ "Concordo \nTotalmente"
+)
 )
 
-## tabela de contingência
+## tabela com frequencias e porcentagens
+table(factor(an2$afirmativas), 
+      factor(an2$respostas, levels = ordem_5))
 
 round(
   prop.table(
-    table(factor(an1$`Partido/Federação política (disposto na planilha)`), 
-          factor(an1$`Devemos investir em educação para prevenção do uso problemático de drogas`, levels = ordem_5)), 1), 4)*100
+    table(factor(an2$afirmativas), 
+          factor(an2$respostas, levels = ordem_5)), 1), 4)*100
 
-table(factor(an1$`Partido/Federação política (disposto na planilha)`), 
-      factor(an1$`Devemos investir em educação para prevenção do uso problemático de drogas`, levels = ordem_5))
-
-
-# gráfico de colunas empilhadas -----
-
-## manipulações para o gráfico
-an1 <- as.data.frame(table(
-  an1$`Partido/Federação política (disposto na planilha)`, 
-  an1$`Devemos investir em educação para prevenção do uso problemático de drogas`))
-
-ggplot(an1, 
-       aes(x = Var1, 
-           y = Freq, 
-           fill = factor(Var2, levels = ordem_5))) +
-  geom_bar(stat = "identity", position = "fill") +
-  labs(x = "Partido/Federação política", y = "Frequência") +
-  theme_estat() +
-  scale_fill_manual(values =  cores_estat, name = "Devemos investir em educação para \nprevenção do uso problemático de drogas")+
-  scale_x_discrete(
-    labels=c("MDB", "NOVO", "PDT", "PL", "PODEMOS", "PP", "PSD", "PSDB/\nCIDADANIA", "PT/PV/\nPCdoB", "REPUBLI-\nCANOS", "UNIÃO")
-  ) + 
-  theme(axis.text = ggplot2::element_text(colour = "black", size = 8),
-        text = element_text(family = "sans", size = 10))
-#ggsave("colunas-bi-1.pdf", width = 158, height = 93, units = "mm")
-
-####### análise 2 - Devemos adotar políticas sociais para pessoas que usam drogas #######
-
-an2 <- banco %>% 
-  select(`Partido/Federação política (disposto na planilha)`,
-         `Devemos adotar políticas sociais para pessoas que usam drogas
-`) %>% mutate(
-           "Devemos adotar políticas sociais para pessoas que usam drogas" = case_when(
-              `Devemos adotar políticas sociais para pessoas que usam drogas
-` == 1 ~ "Discordo \nTotalmente",
-              `Devemos adotar políticas sociais para pessoas que usam drogas
-` == 2 ~ "Discordo \nParcialmente",
-              `Devemos adotar políticas sociais para pessoas que usam drogas
-` == 3 ~ "Neutro",
-              `Devemos adotar políticas sociais para pessoas que usam drogas
-` == 4 ~ "Concordo \nParcialmente",
-              `Devemos adotar políticas sociais para pessoas que usam drogas
-` == 5 ~ "Concordo \nTotalmente"
+## gráfico
+an2 <- an2 %>%
+  group_by(afirmativas, respostas) %>%
+  summarise(freq = n()) %>%
+  mutate(
+    freq_relativa = freq %>% percent()
   )
+
+ggplot(an2, aes(x = afirmativas, y = freq, fill = factor(respostas, levels = ordem_5))) +
+  geom_bar(stat = "identity", position = "fill") +
+  labs(x = "Afirmativas", y = "Frequência relativa") +
+  scale_x_discrete(labels = wrap_format(30)) +
+  #guides(fill=guide_legend(title="Proficiência")) +
+  theme_estat() +
+  scale_fill_manual(name = "Respostas", values =  cores_estat) +
+  theme(legend.position = "right") +
+  coord_flip()
+#ggsave("colunas-an2.pdf", width = 158, height = 93, units = "mm")
+
+####### análise 4 #######
+# referente às afirmativas:
+# Deve-se regulamentar a produção e o comércio das drogas hoje ilícitas para diminuir o poder do tráfico
+# Deve-se regulamentar a maconha e tributar seu comércio para arrecadação de impostos
+# As drogas ilícitas devem ser legalizadas para proteger a população negra da violência
+
+an4 <- banco[,c(12:14)]
+
+an4 <- an4 %>% 
+  reshape2::melt(variable.name = "afirmativas", value.name = "respostas")
+
+an4 <- an4 %>%  mutate( "respostas" = case_when( 
+  respostas == 1 ~ "Discordo \nTotalmente",
+  respostas == 2 ~ "Discordo \nParcialmente",
+  respostas == 3 ~ "Neutro",
+  respostas == 4 ~ "Concordo \nParcialmente",
+  respostas == 5 ~ "Concordo \nTotalmente"
+)
 )
 
-## tabela de contingência
+## tabela com frequencias e porcentagens
+table(factor(an4$afirmativas), 
+      factor(an4$respostas, levels = ordem_5))
 
 round(
   prop.table(
-    table(factor(an2$`Partido/Federação política (disposto na planilha)`), 
-          factor(an2$`Devemos adotar políticas sociais para pessoas que usam drogas`, levels = ordem_5)), 1), 4)*100
+    table(factor(an4$afirmativas), 
+          factor(an4$respostas, levels = ordem_5)), 1), 4)*100
 
-table(factor(an2$`Partido/Federação política (disposto na planilha)`), 
-      factor(an2$`Devemos adotar políticas sociais para pessoas que usam drogas`, levels = ordem_5))
-
-
-# gráfico de colunas empilhadas -----
-
-## manipulações para o gráfico
-an2 <- as.data.frame(table(
-  an2$`Partido/Federação política (disposto na planilha)`, 
-  an2$`Devemos adotar políticas sociais para pessoas que usam drogas`))
-
-ggplot(an2, 
-       aes(x = Var1, 
-           y = Freq, 
-           fill = factor(Var2, levels = ordem_5))) +
-  geom_bar(stat = "identity", position = "fill") +
-  labs(x = "Partido/Federação política", y = "Frequência") +
-  theme_estat() +
-  scale_fill_manual(values =  cores_estat, name = "Devemos adotar políticas sociais \npara pessoas que usam drogas")+
-  scale_x_discrete(
-    labels=c("MDB", "NOVO", "PDT", "PL", "PODEMOS", "PP", "PSD", "PSDB/\nCIDADANIA", "PT/PV/\nPCdoB", "REPUBLI-\nCANOS", "UNIÃO")
-  ) + 
-  theme(axis.text = ggplot2::element_text(colour = "black", size = 8),
-        text = element_text(family = "sans", size = 10))
-#ggsave("colunas-bi-2.pdf", width = 158, height = 93, units = "mm")
-
-
-####### análise 3 - Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado #######
-
-an3 <- banco %>% 
-  select(`Partido/Federação política (disposto na planilha)`,
-         `Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado
-`) %>% mutate(
-  "Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado" = case_when( 
-    `Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado
-` == 1 ~ "Discordo \nTotalmente",
-    `Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado
-` == 2 ~ "Discordo \nParcialmente",
-    `Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado
-` == 3 ~ "Neutro",
-    `Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado
-` == 4 ~ "Concordo \nParcialmente",
-    `Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado
-` == 5 ~ "Concordo \nTotalmente"
+## gráfico
+an4 <- an4 %>%
+  group_by(afirmativas, respostas) %>%
+  summarise(freq = n()) %>%
+  mutate(
+    freq_relativa = freq %>% percent()
   )
+
+ggplot(an4, aes(x = afirmativas, y = freq, fill = factor(respostas, levels = ordem_5))) +
+  geom_bar(stat = "identity", position = "fill") +
+  labs(x = "Afirmativas", y = "Frequência relativa") +
+  scale_x_discrete(labels = wrap_format(30)) +
+  #guides(fill=guide_legend(title="Proficiência")) +
+  theme_estat() +
+  scale_fill_manual(name = "Respostas", values =  cores_estat) +
+  theme(legend.position = "right") +
+  coord_flip()
+#ggsave("colunas-an4.pdf", width = 158, height = 93, units = "mm")
+
+
+####### análise 5 #######
+# referente às afirmativas:
+# Forças policiais e o sistema penal seriam mais eficientes se as drogas fossem legalizadas
+# A violência que resulta da proibição das drogas afeta mais as populações negras e pobres
+# A proibição das drogas não causa impacto ambiental 
+# A proibição das drogas aumenta a violência entre populações indígenas, quilombolas, ribeirinhas
+
+an5 <- banco[,c(21:24)]
+
+an5 <- an5 %>% 
+  reshape2::melt(variable.name = "afirmativas", value.name = "respostas")
+
+an5 <- an5 %>%  mutate( "respostas" = case_when( 
+  respostas == 1 ~ "Discordo \nTotalmente",
+  respostas == 2 ~ "Discordo \nParcialmente",
+  respostas == 3 ~ "Neutro",
+  respostas == 4 ~ "Concordo \nParcialmente",
+  respostas == 5 ~ "Concordo \nTotalmente"
+)
 )
 
-## tabela de contingência
+## tabela com frequencias e porcentagens
+table(factor(an5$afirmativas), 
+      factor(an5$respostas, levels = ordem_5))
 
 round(
   prop.table(
-    table(factor(an3$`Partido/Federação política (disposto na planilha)`), 
-          factor(an3$`Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado`, levels = ordem_5)), 1), 4)*100
+    table(factor(an5$afirmativas), 
+          factor(an5$respostas, levels = ordem_5)), 1), 4)*100
 
-table(factor(an3$`Partido/Federação política (disposto na planilha)`), 
-      factor(an3$`Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado`, levels = ordem_5))
-
-
-# gráfico de colunas empilhadas -----
-
-## manipulações para o gráfico
-an3 <- as.data.frame(table(
-  an3$`Partido/Federação política (disposto na planilha)`, 
-  an3$`Pessoas que tenham problemas com uso de drogas devem ter o direito ao tratamento financiado pelo Estado`))
-
-ggplot(an3, 
-       aes(x = Var1, 
-           y = Freq, 
-           fill = factor(Var2, levels = ordem_5))) +
-  geom_bar(stat = "identity", position = "fill") +
-  labs(x = "Partido/Federação política", y = "Frequência") +
-  theme_estat() +
-  scale_fill_manual(values =  cores_estat, 
-                    name = "Pessoas que tenham problemas com \nuso de drogas devem ter o direito ao \ntratamento financiado pelo Estado")+
-  scale_x_discrete(
-    labels=c("MDB", "NOVO", "PDT", "PL", "PODEMOS", "PP", "PSD", "PSDB/\nCIDADANIA", "PT/PV/\nPCdoB", "REPUBLI-\nCANOS", "UNIÃO")
-  ) + 
-  guides(fill=guide_legend(ncol=2, byrow=TRUE)) +
-  theme(axis.text = ggplot2::element_text(colour = "black", size = 8),
-        text = element_text(family = "sans", size = 10))
-#ggsave("colunas-bi-3.pdf", width = 158, height = 93, units = "mm")
-
-
-####### análise 4 - Cada tipo de droga deve ter uma regulação específica definida pelo Estado #######
-
-an4 <- banco %>% 
-  select(`Partido/Federação política (disposto na planilha)`,
-         `Cada tipo de droga deve ter uma regulação específica definida pelo Estado
-`) %>% mutate(
-  "Cada tipo de droga deve ter uma regulação específica definida pelo Estado" = case_when( 
-    `Cada tipo de droga deve ter uma regulação específica definida pelo Estado
-` == 1 ~ "Discordo \nTotalmente",
-    `Cada tipo de droga deve ter uma regulação específica definida pelo Estado
-` == 2 ~ "Discordo \nParcialmente",
-    `Cada tipo de droga deve ter uma regulação específica definida pelo Estado
-` == 3 ~ "Neutro",
-    `Cada tipo de droga deve ter uma regulação específica definida pelo Estado
-` == 4 ~ "Concordo \nParcialmente",
-    `Cada tipo de droga deve ter uma regulação específica definida pelo Estado
-` == 5 ~ "Concordo \nTotalmente"
+## gráfico
+an5 <- an5 %>%
+  group_by(afirmativas, respostas) %>%
+  summarise(freq = n()) %>%
+  mutate(
+    freq_relativa = freq %>% percent()
   )
+
+ggplot(an5, aes(x = afirmativas, y = freq, fill = factor(respostas, levels = ordem_5))) +
+  geom_bar(stat = "identity", position = "fill") +
+  labs(x = "Afirmativas", y = "Frequência relativa") +
+  scale_x_discrete(labels = wrap_format(30)) +
+  #guides(fill=guide_legend(title="Proficiência")) +
+  theme_estat() +
+  scale_fill_manual(name = "Respostas", values =  cores_estat) +
+  theme(legend.position = "right") +
+  #theme(axis.text=element_text(size=8), legend.text = element_text(size=8),legend.title=element_text(size=8.5),
+  #      axis.title.y=element_text(size=9), axis.title.x=element_text(size=9)) +
+  coord_flip()
+#ggsave("colunas-an5.pdf", width = 158, height = 93, units = "mm")
+
+####### análise 6 #######
+# referente às afirmativas:
+# Populações impactadas pela proibição das drogas devem ser prioritariamente beneficiadas nos modelos de regulação
+# Recursos da tributação de drogas ilegais, como maconha, devem prioritariamente beneficiar pessoas e comunidades afetadas pela violência e prisões relacionadas às drogas.
+# Se a maconha for legalizada, pessoas que já foram presas por conta da proibição devem ter prioridade no licenciamento para produção e comercialização de produtos à base da substância.
+
+an6 <- banco[,c(25:27)]
+
+an6 <- an6 %>% 
+  reshape2::melt(variable.name = "afirmativas", value.name = "respostas")
+
+an6 <- an6 %>%  mutate( "respostas" = case_when( 
+  respostas == 1 ~ "Discordo \nTotalmente",
+  respostas == 2 ~ "Discordo \nParcialmente",
+  respostas == 3 ~ "Neutro",
+  respostas == 4 ~ "Concordo \nParcialmente",
+  respostas == 5 ~ "Concordo \nTotalmente"
+)
 )
 
-## tabela de contingência
+## tabela com frequencias e porcentagens
+table(factor(an6$afirmativas), 
+      factor(an6$respostas, levels = ordem_5))
 
 round(
   prop.table(
-    table(factor(an4$`Partido/Federação política (disposto na planilha)`), 
-          factor(an4$`Cada tipo de droga deve ter uma regulação específica definida pelo Estado`, levels = ordem_5)), 1), 4)*100
+    table(factor(an6$afirmativas), 
+          factor(an6$respostas, levels = ordem_5)), 1), 4)*100
 
-table(factor(an4$`Partido/Federação política (disposto na planilha)`), 
-      factor(an4$`Cada tipo de droga deve ter uma regulação específica definida pelo Estado`, levels = ordem_5))
-
-
-# gráfico de colunas empilhadas -----
-
-## manipulações para o gráfico
-an4 <- as.data.frame(table(
-  an4$`Partido/Federação política (disposto na planilha)`, 
-  an4$`Cada tipo de droga deve ter uma regulação específica definida pelo Estado`))
-
-ggplot(an4, 
-       aes(x = Var1, 
-           y = Freq, 
-           fill = factor(Var2, levels = ordem_5))) +
-  geom_bar(stat = "identity", position = "fill") +
-  labs(x = "Partido/Federação política", y = "Frequência") +
-  theme_estat() +
-  scale_fill_manual(values =  cores_estat, 
-                    name = "Cada tipo de droga deve ter uma regulação \nespecífica definida pelo Estado")+
-  scale_x_discrete(
-    labels=c("MDB", "NOVO", "PDT", "PL", "PODEMOS", "PP", "PSD", "PSDB/\nCIDADANIA", "PT/PV/\nPCdoB", "REPUBLI-\nCANOS", "UNIÃO")
-  ) + 
-  guides(fill=guide_legend(ncol=2, byrow=TRUE)) +
-  theme(axis.text = ggplot2::element_text(colour = "black", size = 8),
-        text = element_text(family = "sans", size = 10))
-#ggsave("colunas-bi-4.pdf", width = 158, height = 93, units = "mm")
-
-
-####### análise 5 - Pequenos e grandes traficantes devem ter penas diferentes #######
-
-an5 <- banco %>% 
-  select(`Partido/Federação política (disposto na planilha)`,
-         `Pequenos e grandes traficantes devem ter penas diferentes
-`) %>% mutate(
-  "Pequenos e grandes traficantes devem ter penas diferentes" = case_when( 
-    `Pequenos e grandes traficantes devem ter penas diferentes
-` == 1 ~ "Discordo \nTotalmente",
-    `Pequenos e grandes traficantes devem ter penas diferentes
-` == 2 ~ "Discordo \nParcialmente",
-    `Pequenos e grandes traficantes devem ter penas diferentes
-` == 3 ~ "Neutro",
-    `Pequenos e grandes traficantes devem ter penas diferentes
-` == 4 ~ "Concordo \nParcialmente",
-    `Pequenos e grandes traficantes devem ter penas diferentes
-` == 5 ~ "Concordo \nTotalmente"
+## gráfico
+an6 <- an6 %>%
+  group_by(afirmativas, respostas) %>%
+  summarise(freq = n()) %>%
+  mutate(
+    freq_relativa = freq %>% percent()
   )
-)
 
-## tabela de contingência
-
-round(
-  prop.table(
-    table(factor(an5$`Partido/Federação política (disposto na planilha)`), 
-          factor(an5$`Pequenos e grandes traficantes devem ter penas diferentes`, levels = ordem_5)), 1), 4)*100
-
-table(factor(an5$`Partido/Federação política (disposto na planilha)`), 
-      factor(an5$`Pequenos e grandes traficantes devem ter penas diferentes`, levels = ordem_5))
-
-
-# gráfico de colunas empilhadas -----
-
-## manipulações para o gráfico
-an5 <- as.data.frame(table(
-  an5$`Partido/Federação política (disposto na planilha)`, 
-  an5$`Pequenos e grandes traficantes devem ter penas diferentes`))
-
-ggplot(an5, 
-       aes(x = Var1, 
-           y = Freq, 
-           fill = factor(Var2, levels = ordem_5))) +
+ggplot(an6, aes(x = afirmativas, y = freq, fill = factor(respostas, levels = ordem_5))) +
   geom_bar(stat = "identity", position = "fill") +
-  labs(x = "Partido/Federação política", y = "Frequência") +
+  labs(x = "Afirmativas", y = "Frequência relativa") +
+  scale_x_discrete(labels = wrap_format(33)) +
+  #guides(fill=guide_legend(title="Proficiência")) +
   theme_estat() +
-  scale_fill_manual(values =  cores_estat, 
-                    name = "Pequenos e grandes traficantes \ndevem ter penas diferentes")+
-  scale_x_discrete(
-    labels=c("MDB", "NOVO", "PDT", "PL", "PODEMOS", "PP", "PSD", "PSDB/\nCIDADANIA", "PT/PV/\nPCdoB", "REPUBLI-\nCANOS", "UNIÃO")
-  ) + 
-  guides(fill=guide_legend(ncol=3, byrow=TRUE)) +
-  theme(axis.text = ggplot2::element_text(colour = "black", size = 8),
-        text = element_text(family = "sans", size = 10))
-#ggsave("colunas-bi-5.pdf", width = 158, height = 93, units = "mm")
+  scale_fill_manual(name = "Respostas", values =  cores_estat) +
+  theme(legend.position = "right") +
+  coord_flip()
+#ggsave("colunas-an6.pdf", width = 158, height = 93, units = "mm")
+
