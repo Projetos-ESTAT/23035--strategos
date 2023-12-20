@@ -352,7 +352,7 @@ ggplot(an3, aes(x = afirmativas, y = freq, fill = factor(respostas, levels = ord
 # Deve-se regulamentar a maconha e tributar seu comércio para arrecadação de impostos
 # As drogas ilícitas devem ser legalizadas para proteger a população negra da violência
 
-an4 <- banco[,c(12:14)]
+an4 <- df[,c(11:13)]
 
 an4 <- an4 %>% 
   reshape2::melt(variable.name = "afirmativas", value.name = "respostas")
@@ -402,7 +402,7 @@ ggplot(an4, aes(x = afirmativas, y = freq, fill = factor(respostas, levels = ord
 # A proibição das drogas não causa impacto ambiental 
 # A proibição das drogas aumenta a violência entre populações indígenas, quilombolas, ribeirinhas
 
-an5 <- banco[,c(21:24)]
+an5 <- df[,c(14:17)]
 
 an5 <- an5 %>% 
   reshape2::melt(variable.name = "afirmativas", value.name = "respostas")
@@ -453,7 +453,7 @@ ggplot(an5, aes(x = afirmativas, y = freq, fill = factor(respostas, levels = ord
 # Recursos da tributação de drogas ilegais, como maconha, devem prioritariamente beneficiar pessoas e comunidades afetadas pela violência e prisões relacionadas às drogas.
 # Se a maconha for legalizada, pessoas que já foram presas por conta da proibição devem ter prioridade no licenciamento para produção e comercialização de produtos à base da substância.
 
-an6 <- banco[,c(25:27)]
+an6 <- df[,c(18:20)]
 
 an6 <- an6 %>% 
   reshape2::melt(variable.name = "afirmativas", value.name = "respostas")
